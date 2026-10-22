@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { api } from './api';
+import { api, resolveFile } from './api';
 import { can as canPerm } from './lib/perms';
 import { BANK_ID, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_SERVICE_TYPES } from './lib/constants';
 
@@ -50,6 +50,11 @@ export function AppProvider({ children }) {
       setStatus('ready');
     } catch (e) {
       setError(e.code || e.message);
+      if (e.code === 'network') {
+        // keep the session; the user can retry when back online
+        setStatus('offline');
+        return;
+      }
       writeLS(TOKEN_KEY, null);
       setToken(null);
       setStatus('signedout');
@@ -74,12 +79,18 @@ export function AppProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    if (token && !api.isMock) api.request('logout', {}, token).catch(() => {});
+    try {
+      window.google?.accounts?.id?.disableAutoSelect();
+    } catch {
+      /* ignore */
+    }
     writeLS(TOKEN_KEY, null);
     setToken(null);
     setMe(null);
     setDb(null);
     setStatus('signedout');
-  }, []);
+  }, [token]);
 
   const settings = useMemo(() => {
     const s = Object.fromEntries((db?.settings || []).map((x) => [x.id, x.value]));
@@ -121,11 +132,14 @@ export function AppProvider({ children }) {
       try {
         return await api.request(action, params, token);
       } catch (e) {
-        toast(e.code || e.message, 'error');
+        if (e.code === 'session_expired' || e.code === 'not_authorized') {
+          logout();
+          setError(e.code);
+        } else toast(e.code || e.message, 'error');
         throw e;
       }
     },
-    [token, toast],
+    [token, toast, logout],
   );
 
   // mirror the server's audit entry locally so the Activity log stays current
@@ -194,6 +208,8 @@ export function AppProvider({ children }) {
 
   const reload = useCallback(() => token && load(token), [token, load]);
 
+  const fileUrl = useCallback((value) => resolveFile(value, token), [token]);
+
   const lookups = useMemo(() => {
     const users = new Map((db?.users || []).map((u) => [u.id, u]));
     const flats = new Map((db?.flats || []).map((f) => [f.id, f]));
@@ -214,7 +230,7 @@ export function AppProvider({ children }) {
 
   const value = {
     status, error, me, db, perms, can, settings, year, setYear, years, login, logout,
-    create, bulkCreate, update, remove, run, reload, forYear, toast, toastMsg, isMock: api.isMock, ...lookups,
+    create, bulkCreate, update, remove, run, reload, fileUrl, forYear, toast, toastMsg, isMock: api.isMock, ...lookups,
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

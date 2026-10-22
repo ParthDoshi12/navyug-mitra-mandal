@@ -1,6 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../store';
 import { useT } from '../lib/i18n';
-import { api } from '../api';
+import { api, GOOGLE_CLIENT_ID } from '../api';
 import { Avatar } from '../components/ui';
 import Icon from '../components/Icon';
 import logo from '../assets/icon.svg';
@@ -16,10 +17,55 @@ function GoogleG() {
   );
 }
 
+function loadGis() {
+  if (window.google?.accounts?.id) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// Renders Google's own "Sign in with Google" button; its ID token goes to the backend.
+function GoogleButton({ onCredential }) {
+  const { t, lang } = useT();
+  const ref = useRef();
+  const cb = useRef(onCredential);
+  cb.current = onCredential;
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    loadGis()
+      .then(() => {
+        if (!alive || !ref.current) return;
+        window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: (r) => cb.current(r.credential) });
+        window.google.accounts.id.renderButton(ref.current, {
+          theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', locale: lang === 'hi' ? 'hi' : 'en',
+          width: Math.min(320, ref.current.offsetWidth || 300),
+        });
+      })
+      .catch(() => alive && setFailed(true));
+    return () => {
+      alive = false;
+    };
+  }, [lang]);
+  if (failed) return <div className="error-box">{t('err.network')}</div>;
+  return <div ref={ref} style={{ display: 'flex', justifyContent: 'center', minHeight: 44 }} />;
+}
+
 export default function Login() {
   const { login, error } = useApp();
   const { t, lang, setLang } = useT();
   const demo = api.isMock ? api.demoUsers() : [];
+  const [busy, setBusy] = useState(false);
+  const onCredential = async (cred) => {
+    setBusy(true);
+    await login(cred);
+    setBusy(false);
+  };
 
   return (
     <div className="app login">
@@ -40,9 +86,20 @@ export default function Login() {
           <div className="bold" style={{ fontSize: 18 }}>{t('login.welcome')}</div>
           <p className="muted small" style={{ marginTop: 2 }}>{t('login.sub')}</p>
           {error && <div className="error-box">{t(`err.${error}`)}</div>}
-          <button className="google-btn" disabled={api.isMock} title={api.isMock ? t('login.demoNote') : ''}>
-            <GoogleG /> {t('login.google')}
-          </button>
+          {api.isMock ? (
+            <button className="google-btn" disabled title={t('login.demoNote')}>
+              <GoogleG /> {t('login.google')}
+            </button>
+          ) : !GOOGLE_CLIENT_ID ? (
+            <div className="error-box">{t('err.client_id_not_set')}</div>
+          ) : busy ? (
+            <div style={{ textAlign: 'center' }}>
+              <div className="spinner" />
+              {t('c.loading')}
+            </div>
+          ) : (
+            <GoogleButton onCredential={onCredential} />
+          )}
         </div>
 
         {api.isMock && (

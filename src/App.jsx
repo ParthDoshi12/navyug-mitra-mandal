@@ -45,6 +45,24 @@ const PAGES = [
   ['admin', Admin],
 ];
 
+function Offline() {
+  const { reload, logout } = useApp();
+  const { t } = useT();
+  return (
+    <div className="app loading-screen">
+      <div style={{ textAlign: 'center', padding: 24 }}>
+        <div className="error-box">{t('err.network')}</div>
+        <button className="btn primary block" onClick={reload} style={{ marginBottom: 10 }}>
+          {t('c.retry')}
+        </button>
+        <button className="btn ghost block" onClick={logout}>
+          {t('c.logout')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { status } = useApp();
   const { t } = useT();
@@ -59,6 +77,7 @@ export default function App() {
       </div>
     );
   }
+  if (status === 'offline') return <Offline />;
   if (status !== 'ready') return <Login />;
 
   return (

@@ -176,6 +176,28 @@ function waNumber(p) {
   return d.length === 10 ? '91' + d : d;
 }
 
+// Images saved by the backend are "drive:<id>"; this resolves them (or passes data/http URLs through).
+export function useStoredFile(value) {
+  const { fileUrl } = useApp();
+  const [url, setUrl] = useState(value && !String(value).startsWith('drive:') ? value : '');
+  useEffect(() => {
+    let alive = true;
+    fileUrl(value)
+      .then((u) => alive && setUrl(u))
+      .catch(() => alive && setUrl(''));
+    return () => {
+      alive = false;
+    };
+  }, [value, fileUrl]);
+  return url;
+}
+
+export function StoredImage({ value, ...props }) {
+  const url = useStoredFile(value);
+  if (!value) return null;
+  return url ? <img src={url} alt="" {...props} /> : <div className="spinner" style={{ margin: '16px auto' }} />;
+}
+
 // Small helper for form state
 export function useForm(initial) {
   const [v, setV] = useState(initial);

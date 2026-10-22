@@ -5,5 +5,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: './',
-  server: { port: 5173 },
+  // fixed port: Google sign-in only works from origins listed on the OAuth client
+  server: { port: 5173, strictPort: true },
 });

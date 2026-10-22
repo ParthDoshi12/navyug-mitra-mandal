@@ -5,7 +5,7 @@ import { useApp } from '../store';
 import { useT } from '../lib/i18n';
 import { MODULES, allPerms } from '../lib/perms';
 import { fmtDateTime } from '../lib/format';
-import { Avatar, Chips, Empty, Fab, Field, PageHead, Search, Seg, Sheet, ViewOnlyBadge, useDelete, useForm } from '../components/ui';
+import { Avatar, Chips, Empty, Fab, Field, PageHead, Search, Seg, Sheet, StoredImage, ViewOnlyBadge, useDelete, useForm } from '../components/ui';
 import Icon from '../components/Icon';
 
 export default function Admin() {
@@ -429,7 +429,7 @@ function Settings() {
         </Field>
         <Field label={t('pay.qrImage')} optional hint={t('pay.qrImageHint')}>
           <input ref={fileRef} type="file" accept="image/*" onChange={onQr} style={{ display: 'none' }} />
-          {v.qrImage && <img src={v.qrImage} alt="" className="pay-qr" style={{ maxWidth: 180 }} />}
+          <StoredImage value={v.qrImage} className="pay-qr" style={{ maxWidth: 180 }} />
           <div className="btn-row">
             <button type="button" className="btn secondary sm" onClick={() => fileRef.current.click()}>
               <Icon name="camera" size={16} /> {v.qrImage ? t('pay.replace') : t('pay.upload')}

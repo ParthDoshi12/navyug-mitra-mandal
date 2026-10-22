@@ -28,8 +28,9 @@ Admin → Settings → "Reset demo data" restores the sample data.
 - `src/lib/i18n.jsx` – English and Hindi text
 - `src/pages/` – one file per screen
 
-## Next steps
+## Real backend (Google Sheet)
 
-1. Google Sheet + Apps Script backend (set `VITE_API_URL` in `.env.local` to switch from the mock)
-2. Google sign-in (OAuth Client ID)
-3. Publish to GitHub Pages (`npm run build`, deploy the `dist` folder)
+- Backend code: `apps-script/Code.gs`. One-time setup steps: [`apps-script/SETUP.md`](apps-script/SETUP.md).
+- To run locally against it, copy `.env.example` to `.env.local` and fill in the Web app URL and Client ID.
+- GitHub Pages: set repository variables `VITE_API_URL` and `VITE_GOOGLE_CLIENT_ID`; every push to `main`
+  then builds and deploys via `.github/workflows/deploy.yml`.

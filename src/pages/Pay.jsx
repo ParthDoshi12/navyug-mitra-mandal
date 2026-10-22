@@ -6,7 +6,7 @@ import { QUICK_AMOUNTS } from '../lib/constants';
 import { inr } from '../lib/format';
 import { drawPayCard, qrDataUrl, shareCanvas, upiLink } from '../lib/upi';
 import { CollectionSheets, useCollectionSheets } from '../components/collection';
-import { Empty, Field, PageHead, Seg } from '../components/ui';
+import { Empty, Field, PageHead, Seg, useStoredFile } from '../components/ui';
 import Icon from '../components/Icon';
 
 export default function Pay() {
@@ -18,6 +18,7 @@ export default function Pay() {
   const [qr, setQr] = useState('');
   const [busy, setBusy] = useState(false);
   const sheets = useCollectionSheets();
+  const qrImageUrl = useStoredFile(qrImage);
 
   const useUpi = source === 'upi' && upiId;
   const note = `Navratri ${year} contribution`;
@@ -45,7 +46,7 @@ export default function Pay() {
     );
   }
 
-  const shown = useUpi ? qr : qrImage;
+  const shown = useUpi ? qr : qrImageUrl;
 
   const share = async () => {
     setBusy(true);

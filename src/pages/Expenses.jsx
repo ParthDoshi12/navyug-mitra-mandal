@@ -4,7 +4,7 @@ import { useT } from '../lib/i18n';
 import { PAY_MODES } from '../lib/constants';
 import { defaultDate, fmtDate, inr, sum } from '../lib/format';
 import { compressImage } from '../lib/image';
-import { Chips, DetailRow, Empty, Fab, Field, PageHead, Search, Seg, Sheet, ViewOnlyBadge, useDelete, useForm } from '../components/ui';
+import { Chips, DetailRow, Empty, Fab, Field, PageHead, Search, Seg, Sheet, StoredImage, ViewOnlyBadge, useDelete, useForm } from '../components/ui';
 import Icon from '../components/Icon';
 
 export default function Expenses() {
@@ -165,7 +165,7 @@ function ExpenseForm({ initial = {}, onDone }) {
         <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onFile} style={{ display: 'none' }} />
         {v.billUrl ? (
           <div>
-            <img src={v.billUrl} alt="" className="bill-thumb" />
+            <StoredImage value={v.billUrl} className="bill-thumb" />
             <button type="button" className="btn ghost sm" onClick={() => set('billUrl')('')}>
               <Icon name="trash" size={16} /> {t('exp.removeBill')}
             </button>
@@ -205,7 +205,7 @@ function ExpenseDetail({ rec, onClose, onEdit }) {
         <DetailRow k={t('c.notes')} v={rec.notes} />
       </div>
       {rec.billUrl && (
-        <img src={rec.billUrl} alt={t('exp.bill')} className="bill-thumb" style={{ marginBottom: 12 }} />
+        <StoredImage value={rec.billUrl} alt={t('exp.bill')} className="bill-thumb" style={{ marginBottom: 12 }} />
       )}
       {can('expenses', 'edit') && (
         <div className="btn-row">

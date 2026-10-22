@@ -27,7 +27,7 @@ export function can(perms, mod, need = 'view') {
 export const READ_MODULES = {
   collections: ['collections', 'dashboard', 'reports', 'flats', 'cash', 'pledges'],
   pledges: ['pledges', 'dashboard', 'reports', 'collections', 'flats'],
-  expenses: ['expenses', 'dashboard', 'reports', 'budget', 'cash', 'contacts'],
+  expenses: ['expenses', 'dashboard', 'reports', 'budget', 'cash'],
   budgets: ['budget', 'dashboard', 'reports'],
   handovers: ['cash', 'dashboard', 'reports'],
   contacts: ['contacts', 'expenses'],
