@@ -1,0 +1,9 @@
+{
+  "name": "Navyug Mitra Mandal",
+  "short_name": "Navyug MM",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FFF7EE",
+  "theme_color": "#8E0E4B",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
