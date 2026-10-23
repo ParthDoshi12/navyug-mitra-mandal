@@ -46,12 +46,15 @@ const PAGES = [
 ];
 
 function Offline() {
-  const { reload, logout } = useApp();
+  const { reload, logout, errorDetail } = useApp();
   const { t } = useT();
   return (
     <div className="app loading-screen">
       <div style={{ textAlign: 'center', padding: 24 }}>
-        <div className="error-box">{t('err.network')}</div>
+        <div className="error-box">
+          {t('err.network')}
+          {errorDetail && <div style={{ fontWeight: 400, fontSize: 12, marginTop: 4, wordBreak: 'break-word' }}>{errorDetail}</div>}
+        </div>
         <button className="btn primary block" onClick={reload} style={{ marginBottom: 10 }}>
           {t('c.retry')}
         </button>

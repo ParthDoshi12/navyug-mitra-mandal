@@ -80,6 +80,7 @@ const DICT = {
     'err.client_id_not_set': 'Google sign-in is not configured yet (Client ID missing).',
     'err.sheet_missing_run_setup': 'The Google Sheet is not set up. Run setup in Apps Script.',
     'c.retry': 'Try again',
+    'err.bad_response': 'The server sent an unexpected reply.',
 
     'dash.balance': 'Balance',
     'dash.collected': 'Collected',
@@ -359,6 +360,7 @@ const DICT = {
     'err.client_id_not_set': 'Google साइन-इन अभी सेट नहीं है (Client ID नहीं है)।',
     'err.sheet_missing_run_setup': 'Google शीट सेट नहीं है। Apps Script में setup चलाएँ।',
     'c.retry': 'फिर कोशिश करें',
+    'err.bad_response': 'सर्वर से अनपेक्षित जवाब मिला।',
 
     'dash.balance': 'शेष राशि',
     'dash.collected': 'कुल चंदा',

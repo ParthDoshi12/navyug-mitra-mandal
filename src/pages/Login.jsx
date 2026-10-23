@@ -57,7 +57,7 @@ function GoogleButton({ onCredential }) {
 }
 
 export default function Login() {
-  const { login, error } = useApp();
+  const { login, error, errorDetail } = useApp();
   const { t, lang, setLang } = useT();
   const demo = api.isMock ? api.demoUsers() : [];
   const [busy, setBusy] = useState(false);
@@ -85,7 +85,12 @@ export default function Login() {
         <div className="card">
           <div className="bold" style={{ fontSize: 18 }}>{t('login.welcome')}</div>
           <p className="muted small" style={{ marginTop: 2 }}>{t('login.sub')}</p>
-          {error && <div className="error-box">{t(`err.${error}`)}</div>}
+          {error && (
+            <div className="error-box">
+              {t(`err.${error}`)}
+              {errorDetail && <div style={{ fontWeight: 400, fontSize: 12, marginTop: 4, wordBreak: 'break-word' }}>{errorDetail}</div>}
+            </div>
+          )}
           {api.isMock ? (
             <button className="google-btn" disabled title={t('login.demoNote')}>
               <GoogleG /> {t('login.google')}

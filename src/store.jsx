@@ -31,6 +31,7 @@ export function AppProvider({ children }) {
   const [db, setDb] = useState(null);
   const [status, setStatus] = useState(token ? 'loading' : 'signedout');
   const [error, setError] = useState('');
+  const [errorDetail, setErrorDetail] = useState('');
   const [yearPref, setYearPref] = useState(() => Number(readLS(YEAR_KEY)) || null);
   const [toastMsg, setToastMsg] = useState(null);
   const toastTimer = useRef();
@@ -50,6 +51,7 @@ export function AppProvider({ children }) {
       setStatus('ready');
     } catch (e) {
       setError(e.code || e.message);
+      setErrorDetail(e.detail || '');
       if (e.code === 'network') {
         // keep the session; the user can retry when back online
         setStatus('offline');
@@ -67,6 +69,7 @@ export function AppProvider({ children }) {
 
   const login = useCallback(async (credential) => {
     setError('');
+    setErrorDetail('');
     try {
       // mock: credential is the email; Google: the ID token, exchanged for a session token
       const res = await api.request('login', api.isMock ? { email: credential } : { idToken: credential });
@@ -75,6 +78,7 @@ export function AppProvider({ children }) {
       setToken(tok);
     } catch (e) {
       setError(e.code || e.message);
+      setErrorDetail(e.detail || '');
     }
   }, []);
 
@@ -229,7 +233,7 @@ export function AppProvider({ children }) {
   );
 
   const value = {
-    status, error, me, db, perms, can, settings, year, setYear, years, login, logout,
+    status, error, errorDetail, me, db, perms, can, settings, year, setYear, years, login, logout,
     create, bulkCreate, update, remove, run, reload, fileUrl, forYear, toast, toastMsg, isMock: api.isMock, ...lookups,
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
